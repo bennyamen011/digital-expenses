@@ -14,9 +14,10 @@ import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@/components/
 interface Saving {
   id: string;
   scheme: string;
-  amount: number;
+  inversement_amount: number;
+  monthly_inversement_amount: number;
   years: number; 
-  maturityAmount: number;
+  total_Return_Amount: number;
 }
 
 export default function SavingsPage() {
@@ -30,8 +31,7 @@ export default function SavingsPage() {
   const calculateSIP = (amount: number, rate: number, months: number): number => {
     const monthlyRate = rate / 12 / 100;
     const maturityAmount =
-      (amount * ((1 + monthlyRate) ** months - 1) * (1 + monthlyRate)) /
-      monthlyRate;
+      amount * ((Math.pow(1 + monthlyRate, months) - 1) / monthlyRate) * (1 + monthlyRate);
     return parseFloat(maturityAmount.toFixed(2));
   };
 
@@ -43,8 +43,8 @@ export default function SavingsPage() {
     if (principal && rate && months) {
       const maturityAmount = calculateSIP(principal, rate, months);
       return {
-        investedAmount: principal * months, // Total principal over the period
-        estimatedReturns: maturityAmount - principal * (months / 12), // Returns only
+        investedAmount: principal * months,
+        estimatedReturns: maturityAmount - principal * months,
       };
     }
     return { investedAmount: 0, estimatedReturns: 0 };
@@ -59,7 +59,14 @@ export default function SavingsPage() {
 
     setSavings((prev) => [
       ...prev,
-      { id, scheme, amount: principal, years: months, maturityAmount },
+      {
+        id,
+        scheme,
+        inversement_amount: principal * months,
+        monthly_inversement_amount: principal,
+        years: months,
+        total_Return_Amount: maturityAmount,
+      },
     ]);
 
     // Reset fields
@@ -83,7 +90,7 @@ export default function SavingsPage() {
           <p className="text-2xl">
             ₹
             {savings
-              .reduce((sum, saving) => sum + saving.amount, 0)
+              .reduce((sum, saving) => sum + saving.inversement_amount, 0)
               .toLocaleString()}
           </p>
         </div>
@@ -92,7 +99,7 @@ export default function SavingsPage() {
           <p className="text-2xl">
             ₹
             {savings
-              .reduce((sum, saving) => sum + saving.maturityAmount, 0)
+              .reduce((sum, saving) => sum + saving.total_Return_Amount, 0)
               .toLocaleString()}
           </p>
         </div>
@@ -179,9 +186,10 @@ export default function SavingsPage() {
           <TableHeader>
             <TableRow>
               <TableHead>Scheme</TableHead>
-              <TableHead>Amount (₹)</TableHead>
-              <TableHead>Duration (Months)</TableHead>
-              <TableHead>Maturity Amount (₹)</TableHead>
+              <TableHead>Invested Amount (₹)</TableHead>
+              <TableHead>Monthly Investment (₹)</TableHead>
+              <TableHead>Duration (Years)</TableHead>
+              <TableHead>Total Return Amount (₹)</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -189,14 +197,15 @@ export default function SavingsPage() {
               savings.map((saving) => (
                 <TableRow key={saving.id}>
                   <TableCell>{saving.scheme}</TableCell>
-                  <TableCell>{saving.amount.toLocaleString()}</TableCell>
+                  <TableCell>{saving.inversement_amount.toLocaleString()}</TableCell>
+                  <TableCell>{saving.monthly_inversement_amount.toLocaleString()}</TableCell>
                   <TableCell>{saving.years}</TableCell>
-                  <TableCell>{saving.maturityAmount.toLocaleString()}</TableCell>
+                  <TableCell>{saving.total_Return_Amount.toLocaleString()}</TableCell>
                 </TableRow>
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={4} className="text-center">
+                <TableCell colSpan={5} className="text-center">
                   No savings added yet.
                 </TableCell>
               </TableRow>

@@ -19,6 +19,7 @@ model User {
   email    String   @unique
   password String
   createdAt DateTime @default(now())
+  // monthly_income number
 }
 
 model Expense {
@@ -29,3 +30,13 @@ model Expense {
   date      DateTime 
   userId    String
 }
+
+model Saving {
+  id                      String   @id @default(uuid())
+  scheme                  String
+  monthlyInvestmentAmount Float
+  years                   Int
+  totalAmount             Float
+  createdAt               DateTime @default(now())
+}
+
