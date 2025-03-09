@@ -14,29 +14,44 @@ datasource db {
 }
 
 model User {
-  id       String   @id @default(uuid())
-  username String   @unique
-  email    String   @unique
-  password String
+  id        String   @id @default(uuid())
+  username  String   @unique
+  email     String   @unique
+  password  String
+  is_first  Boolean  @default(false)
+  salary    Float    @default(0)
   createdAt DateTime @default(now())
-  // monthly_income number
 }
 
 model Expense {
-  id        String   @id @default(uuid())
-  name      String
-  amount    Float
-  category  String
-  date      DateTime 
-  userId    String
+  id       String   @id @default(uuid())
+  name     String
+  amount   Float
+  category String
+  date     DateTime
+  userId   String
 }
 
 model Saving {
-  id                      String   @id @default(uuid())
-  scheme                  String
-  monthlyInvestmentAmount Float
-  years                   Int
-  totalAmount             Float
-  createdAt               DateTime @default(now())
+  id               String   @id @default(uuid())
+  name             String @default("")
+  amount           Float
+  totalsavedAmount Float   
+  date             DateTime
+  duration         Float    @default(0)
+  frequency        String   @default("")
+  totalAmount      Float
+  createdAt        DateTime @default(now())
+  savedList        Saved[]  @relation("SavingToSaved")
 }
 
+model Saved {
+  id        String   @id @default(uuid())
+  savingId  String
+  name      String
+  amount    Float
+  date      DateTime
+  status    String  @default("pending") // "saved" or "pending"
+
+  saving    Saving  @relation("SavingToSaved", fields: [savingId], references: [id])
+}

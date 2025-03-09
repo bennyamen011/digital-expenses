@@ -8,8 +8,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   const menuItems = [
     { name: "Overview", href: "/overview" },
-    { name: "Saving", href: "/overview/savings" },
-    { name: "setGoals", href: "/overview/goals" },
+    { name: "Set Goal", href: "/overview/savings" },
   ];
 
   return (
