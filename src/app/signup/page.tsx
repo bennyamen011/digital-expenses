@@ -15,9 +15,9 @@ export default function SignupPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const router =useRouter()
+  const router = useRouter()
   const handleSignup = async () => {
-    try{
+    try {
       const response = await fetch("/api/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -25,13 +25,12 @@ export default function SignupPage() {
       });
       const data = await response.json();
       if (data.user) {
-        const user: User = data.user;
-        router.push('/overview');
+        router.push('/');
       }
-    }catch(error){
-      console.error('error during signup',error)
+    } catch (error) {
+      console.error('error during signup', error)
     }
-    
+
   };
 
   return (
@@ -39,7 +38,7 @@ export default function SignupPage() {
       <div className="bg-white p-8 rounded-lg shadow-lg w-96">
         <h2 className="text-2xl font-bold text-center mb-6">Signup</h2>
         <div className="space-y-4">
-        <input
+          <input
             type="text"
             placeholder="Username"
             value={username}
