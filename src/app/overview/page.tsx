@@ -52,6 +52,7 @@ interface User {
   username: string;
   email: string;
   password: string;
+  salary:number;
   createdAt: Date;
 }
 
@@ -60,7 +61,6 @@ export default function Overview() {
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [filtered, setFilterd] = useState<Expense[]>([])
   const [monthlyExpense, setMonthlyExpense] = useState<MonthlyExpense[]>([])
-  const [selectedExpense, setSelectedExpense] = useState<Expense[]>([])
   const [openExpenses, setOpenExpenses] = useState<boolean>(false)
   const [name, setName] = useState("");
   const [amount, setAmount] = useState("");
@@ -209,15 +209,12 @@ export default function Overview() {
         </div>
         <div className="bg-white p-4 shadow-md rounded-md">
           <h2 className="text-lg font-bold">Monthly Budget</h2>
-          <p className="text-2xl">2,000</p>
+          <p className="text-2xl">{user?.salary}</p>
         </div>
         <div className="bg-white p-4 shadow-md rounded-md">
-          <div className=" flex justify-between">
           <h2 className="text-lg font-bold">Remaining Balance</h2>
-          <Button>Add to Savings</Button>
-          </div>
           <p className="text-2xl">
-            {(2000 - expenses.reduce((sum, expense) => sum + Number(expense.amount), 0)).toFixed(2)}
+            {user?.salary && (user.salary- expenses.reduce((sum, expense) => sum + Number(expense.amount), 0)).toFixed(2)}
           </p>
         </div>
       </div>
@@ -268,7 +265,7 @@ export default function Overview() {
                   />
                 </div>
                 <div className="mb-4">
-                  <label className="block text-sm font-medium">Category</label>
+                  <label className="block text-sm font-medium">Date</label>
                   <input
                     type="date"
                     value={date}
@@ -407,13 +404,43 @@ export default function Overview() {
                       <td className="px-4 py-2">{item.total_expense}</td>
                       <td className="px-4 py-2">{item.saving}</td>
                       <td className="px-4 py-2">
-                        <Button className="bg-blue-500 text-white hover:bg-blue-600"
-                          onClick={() => {
-                            setOpenExpenses(true)
-                            setSelectedExpense(item.expenses)
-                          }}>
-                          View all
-                        </Button>
+                        <Dialog open={openExpenses} onOpenChange={setOpenExpenses}>
+                        <DialogTrigger className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" onClick={() => setOpenExpenses(true)}>
+                          View All
+                        </DialogTrigger>
+                        <DialogContent>
+                          <DialogHeader>
+                            <DialogTitle>Expenses for {item.month}</DialogTitle>
+                          </DialogHeader>
+                          <table className="w-full table-auto">
+                            <thead>
+                              <tr>
+                                <th className="px-4 py-2 text-left">Name</th>
+                                <th className="px-4 py-2 text-left">Amount</th>
+                                <th className="px-4 py-2 text-left">Category</th>
+                                <th className="px-4 py-2 text-left">Date</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {item.expenses.length > 0 ? (
+                                item.expenses.map((item, index) => (
+                                  <tr key={index} className="border-t">
+                                    <td className="px-4 py-2">{item.name}</td>
+                                    <td className="px-4 py-2">{item.amount}</td>
+                                    <td className="px-4 py-2">{item.category}</td>
+                                    <td className="px-4 py-2">{new Date(item.date).toLocaleDateString()}</td>
+                                  </tr>
+                                ))
+                              ) : (
+                                <tr>
+                                  <td colSpan={5} className="text-center py-4">No results found</td>
+                                </tr>
+                              )}
+                            </tbody>
+
+                          </table>
+                        </DialogContent>
+                      </Dialog>
                       </td>
                       <td className="px-4 py-2">
                         <PieChart width={120} height={120}>
@@ -443,40 +470,10 @@ export default function Overview() {
                   </tr>
                 )}
               </tbody>
+
             </table>
-            <Dialog open={openExpenses} onOpenChange={setOpenExpenses}>
-              <DialogContent >
-                <DialogHeader>
-                  <DialogTitle>Expenses</DialogTitle>
-                </DialogHeader>
-
-                <table className="w-full table-auto">
-                  <thead>
-                    <tr>
-                      <th className="px-4 py-2 text-left">Name</th>
-                      <th className="px-4 py-2 text-left">Amount</th>
-                      <th className="px-4 py-2 text-left">Category</th>
-                      <th className="px-4 py-2 text-left">Date</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {selectedExpense.map((expense) => (
-                      <tr key={expense.id} className="border-t">
-                        <td className="px-4 py-2">{expense.name}</td>
-                        <td className="px-4 py-2">{expense.amount}</td>
-                        <td className="px-4 py-2">{expense.category}</td>
-                        <td className="px-4 py-2">{new Date(expense.date).toLocaleDateString()}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </DialogContent>
-            </Dialog>
-
           </div>
         )}
-
-
 
       </div>
     </div>

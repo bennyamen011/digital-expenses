@@ -6,4 +6,4 @@ function Goal() {
   )
 }
 
-export default Goal
+export default Goal 
