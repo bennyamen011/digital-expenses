@@ -75,7 +75,7 @@ export default function Overview() {
   async function fetchExpenses() {
     if (activeTab == 'monthly') {
       try {
-        const response = await fetch("/api/expenses?type=monthly", { method: "GET" });
+        const response = await fetch(`/api/expenses?type=monthly&user_id=${user?.id}`, { method: "GET" });
         if (!response.ok) throw new Error("Failed to fetch expenses");
         const data = await response.json();
         setMonthlyExpense(data.monthlyExpenses)

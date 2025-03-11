@@ -3,13 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-interface User {
-  id: string;
-  username: string;
-  email: string;
-  password: string;
-  createdAt: Date;
-}
+
 export default function SignupPage() {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");

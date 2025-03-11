@@ -16,9 +16,19 @@ interface MonthlyExpense {
   expenses: Expense[];
 }
 
+interface User {
+  id: string;
+  username: string;
+  email: string;
+  password: string;
+  salary: number; 
+  createdAt: Date;
+}
+
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const type = searchParams.get("type");
+  const user_id = searchParams.get("user_id");
   const monthlyIncome = 2000; // Replace with your dynamic income logic
 
   if (type !== "monthly") {
@@ -34,6 +44,9 @@ export async function GET(request: Request) {
     }
   } else {
     // Fetch and group expenses by month
+    if (!user_id) {
+      return NextResponse.json({ error: "User ID is required" }, { status: 400 });
+    }
     try {
       const expenses = await prisma.expense.findMany();
 
@@ -56,10 +69,17 @@ export async function GET(request: Request) {
         return acc;
       }, {});
 
+        const user:User | null = await prisma.user.findUnique({
+          where:{id:user_id}
+        })
+        if (!user) {
+          return NextResponse.json({ error: "User not found" }, { status: 404 });
+        }
+
       // Calculate savings and format the result
       const result = Object.values(monthlyExpenses).map((monthData) => ({
         ...monthData,
-        saving: monthlyIncome - monthData.total_expense,
+        saving: user.salary - monthData.total_expense,
       }));
 
       return NextResponse.json({ monthlyExpenses: result });
